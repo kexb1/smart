@@ -4,23 +4,25 @@
 #include <string.h>
 #include "Delay.h"
 #include "OLED.H"
+#include <stdbool.h>
 extern int Temperature;
 extern int Shidu;
-extern uint8_t Lock;
-extern uint8_t Switch2;
+extern char Switch1;
+extern char Switch2;
 extern char RECS[250];
-const char* WIFI ="A";
-const char* WIFIASSWORD="1234567890.";
-const char* ClintID="a1FDIqaWEMG.test2|securemode=2\\,signmethod=hmacsha256\\,timestamp=1652839248016|";
-const char* username="test2&a1FDIqaWEMG";
-const char* passwd="772b6ff9f12290add29403a18fe0ff6b8f40f577e239cce48d03763b09af210a";
-const char* Url="a1FDIqaWEMG.iot-as-mqtt.cn-shanghai.aliyuncs.com";
-const char* pubtopic="/sys/a1FDIqaWEMG/test2/thing/event/property/post";
-const char* subtopic="/sys/a1FDIqaWEMG/test2/thing/event/property/post_reply";
+const char* WIFI ="OnePlus";
+const char* WIFIASSWORD="12345678";
+const char* ClintID="hxyphvk6Zgo.home|securemode=2\\,signmethod=hmacsha256\\,timestamp=1669522076858|";
+const char* username="home&hxyphvk6Zgo";
+const char* passwd="e463cda1a507d3ebac338d4cd1a2076c7c830476d68b87c6b82b06349002935b";
+const char* Url="iot-06z00gy7jtp0cg7.mqtt.iothub.aliyuncs.com";
+const char* pubtopic="/sys/hxyphvk6Zgo/home/thing/event/property/post";
+const char* subtopic="/sys/hxyphvk6Zgo/home/thing/event/property/post_reply";
 const char* func1="temperature";
-const char* func2="humidity";
-const char* func3="powerstate_1";
-const char* func4="powerstate_2";
+const char* func2="Humidity";
+const char* func3="PowerSwitch_1";
+const char* func4="PowerSwitch_2";
+extern u32 CO2Data;
 int fputc(int ch,FILE *f )   //printf重定向  
 {
 	USART_SendData(USART1,(uint8_t)ch);
@@ -29,6 +31,7 @@ int fputc(int ch,FILE *f )   //printf重定向
 }
 char esp_Init(void)
 {
+//	char num = 0 ,RECS2[200];
 	memset(RECS,0,sizeof(RECS));
 	printf("AT+RST\r\n");  //重启
 	Delay_ms(2000);
@@ -47,6 +50,8 @@ char esp_Init(void)
 	memset(RECS,0,sizeof(RECS));
 	printf("AT+CWJAP=\"%s\",\"%s\"\r\n",WIFI,WIFIASSWORD); //连接热点
 	Delay_ms(2000);
+//	while(RECS[num++] != '\0');//连接WIFI时会受到几条字符串，只有最后才是OK
+//	RECS2[0] = RECS[num-2];RECS2[1] = RECS[num-1];RECS2[2] = RECS[num];
 	if(strcmp(RECS,"OK"))
 		return 3;
 	
@@ -75,7 +80,7 @@ char esp_Init(void)
 char Esp_PUB(void)
 {
 	memset(RECS,0,sizeof(RECS));
-	printf("AT+MQTTPUB=0,\"%s\",\"{\\\"method\\\":\\\"thing.event.property.post\\\"\\,\\\"params\\\":{\\\"%s\\\":%d\\,\\\"%s\\\":%d\\,\\\"%s\\\":%d\\,\\\"%s\\\":%d}}\",0,0\r\n",pubtopic,func1,Temperature,func2,Shidu,func3,Lock,func4,Switch2);
+	printf("AT+MQTTPUB=0,\"%s\",\"{\\\"method\\\":\\\"thing.event.property.post\\\"\\,\\\"params\\\":{\\\"%s\\\":%d\\,\\\"%s\\\":%d\\,\\\"%s\\\":%d\\,\\\"%s\\\":%d}}\",0,0\r\n",pubtopic,func1,Temperature,func2,Shidu,func3,Switch1,func4,Switch2);
 	//while(RECS[0]);//等待ESP返回数据
 	Delay_ms(200);//延时等待数据接收完成
 	if(strcmp(RECS,"ERROR")==0)
@@ -89,15 +94,18 @@ void CommandAnalyse(void)
 		uint8_t i=0;
 		while(RECS[i++] != '\0')             
 		{
-			if(strncmp((RECS+i),func3,12)==0)
+			
+			if(strncmp((RECS+i),func3,13)==0)
 			{
-				while(RECS[i++] != ':');       
-				Lock=RECS[i];
+				while(RECS[i++] != ':');  
+				Switch1=RECS[i] ;
+				Switch1 -= 48 ;
 			}
-			if(strncmp((RECS+i),func4,12)==0)
+			if(strncmp((RECS+i),func4,13)==0)
 			{
 				while(RECS[i++] != ':');
-				Switch2=RECS[i];
+				Switch2=RECS[i] ;
+				Switch2 -= 48 ;
 			}
 		}
 	}

@@ -33,3 +33,4 @@
 .\objects\esp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\esp.o: .\System\Delay.h
 .\objects\esp.o: .\Hardware\OLED.H
+.\objects\esp.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

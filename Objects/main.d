@@ -30,6 +30,7 @@
 .\objects\main.o: .\Library\misc.h
 .\objects\main.o: .\Hardware\OLED.H
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\objects\main.o: .\System\Delay.h
 .\objects\main.o: .\Hardware\MyUSART.H
 .\objects\main.o: User\esp.h
@@ -37,3 +38,5 @@
 .\objects\main.o: .\Hardware\MySPI.H
 .\objects\main.o: .\System\Timer.H
 .\objects\main.o: .\Hardware\PWM.H
+.\objects\main.o: .\Hardware\sgp30.h
+.\objects\main.o: .\System\sys.h
